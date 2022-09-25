@@ -3,12 +3,11 @@ package biz
 import (
 	"context"
 	"errors"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 	"gorm.io/gorm"
 	"goshop/account_srv/internal"
 	"goshop/account_srv/model"
 	"goshop/account_srv/proto/pb"
+	"goshop/comm"
 	"goshop/custom_error"
 )
 
@@ -87,11 +86,60 @@ func (a *AccountServer) GetAccountById(ctx context.Context,req *pb.IdRequest) (*
 	return res,nil
 }
 func (a *AccountServer) AddAccount(ctx context.Context,req *pb.AddAccountRequest) (*pb.AccountRes, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method AddAccount not implemented")
+
+	// 1.判断账户是否存在
+	var account model.Account
+	tx := internal.DB.Where(&model.Account{Mobile: req.Mobile}).First(&account)
+	if tx.RowsAffected==1{
+		return nil,errors.New(custom_error.AccountExists)
+	}
+
+	// 2.创建
+	account.Role=1
+	account.Mobile=req.Mobile
+	account.NickName=req.Nickname
+
+	salt, hashed := comm.Encode(req.Password)
+	account.Password=hashed
+	account.Salt=salt
+	res := internal.DB.Create(&account)
+	if res.Error!=nil{
+		return nil,errors.New(custom_error.InternalError)
+	}
+
+	accountRes := Model2Pb(account)
+	return accountRes,nil
 }
 func (a *AccountServer) UpdateAccount(ctx context.Context,req *pb.UpdateAccountRequest) (*pb.UpdateAccountRes, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method UpdateAccount not implemented")
+	account := model.Account{}
+	tx := internal.DB.First(&account, req.Id)
+	if tx.RowsAffected==0{
+		return nil,errors.New(custom_error.AccountNotFound)
+	}
+
+	// TODO mobile应该是唯一的
+	account.Mobile=req.Mobile
+	account.NickName=req.Nickname
+	account.Gender=req.Gender
+	r := internal.DB.Save(&account)
+	if r.Error!=nil{
+		return nil,errors.New(custom_error.InternalError)
+	}
+	return &pb.UpdateAccountRes{Result: true},nil
 }
 func (a *AccountServer) CheckPassword(ctx context.Context,req *pb.CheckPasswordRequest) (*pb.CheckPasswordRes, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CheckPassword not implemented")
+	var account model.Account
+	tx := internal.DB.First(&account, req.AccountId)
+
+	if tx.Error!=nil{
+		return nil,errors.New(custom_error.InternalError)
+	}
+
+	if account.Salt==""{
+		return nil,errors.New(custom_error.SaltError)
+	}
+
+	r := comm.Decode(req.Password, account.Salt, account.Password)
+
+	return &pb.CheckPasswordRes{Result: r},nil
 }
