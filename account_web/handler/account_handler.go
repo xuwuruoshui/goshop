@@ -84,7 +84,7 @@ func AccountListHandler(c *gin.Context) {
 }
 
 // 密码登录
-func LoginByPassword(c *gin.Context) {
+func LoginByPasswordHandler(c *gin.Context) {
 	var loginByPassword req.LoginByPassword
 	err := c.ShouldBindJSON(&loginByPassword)
 	if err != nil {
