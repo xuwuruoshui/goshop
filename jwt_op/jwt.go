@@ -8,11 +8,11 @@ import (
 	"time"
 )
 
-var (
-	TokenExpired = errors.New("token已过期")
-	TokenNotValidYet = errors.New("token不再有效")
-	TokenMalformed = errors.New("token非法")
-	TokenInvalid = errors.New("token无效")
+const (
+	TokenExpired = "token已过期"
+	TokenNotValidYet = "token不再有效"
+	TokenMalformed = "token非法"
+	TokenInvalid = "token无效"
 )
 
 
@@ -52,13 +52,13 @@ func (j *JWT) ParseToken(tokenStr string)(*CustomClaims,error){
 		if result,ok := err.(jwt.ValidationError);ok{
 			switch result.Errors {
 			case  jwt.ValidationErrorMalformed:
-				return nil,TokenMalformed
+				return nil,errors.New(TokenMalformed)
 			case  jwt.ValidationErrorExpired:
-				return nil,TokenExpired
+				return nil,errors.New(TokenExpired)
 			case jwt.ValidationErrorNotValidYet:
-				return nil,TokenNotValidYet
+				return nil,errors.New(TokenNotValidYet)
 			default:
-				return nil,TokenInvalid
+				return nil,errors.New(TokenInvalid)
 			}
 		}
 	}
@@ -67,10 +67,10 @@ func (j *JWT) ParseToken(tokenStr string)(*CustomClaims,error){
 		if claims,ok := token.Claims.(*CustomClaims);ok&&token.Valid{
 			return claims,nil
 		}
-		return nil,TokenInvalid
+		return nil,errors.New(TokenInvalid)
 	}
 
-	return nil,TokenInvalid
+	return nil,errors.New(TokenInvalid)
 }
 
 // 刷新token
@@ -94,5 +94,5 @@ func (j *JWT) RefreshToken(tokenStr string)(string,error){
 		return j.GenerateJWT(*claims)
 	}
 
-	return "",TokenInvalid
+	return "",errors.New(TokenInvalid)
 }
