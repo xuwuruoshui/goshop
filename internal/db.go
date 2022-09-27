@@ -29,12 +29,12 @@ func InitDB(){
 	// 1.连接
 	dsn := "root:root@tcp(192.168.0.132:3306)/goshop?charset=utf8mb4&parseTime=True&loc=Local"
 	DB, err = gorm.Open(mysql.Open(dsn), &gorm.Config{Logger: log})
-	if err!=nil{
-		panic("Mysql connect faild:"+err.Error())
+	if err !=nil{
+		panic("Mysql connect faild:"+ err.Error())
 	}
 
 	err = DB.AutoMigrate(&model.Account{})
-	if err!=nil{
+	if err !=nil{
 		fmt.Println(err)
 	}
 }

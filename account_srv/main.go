@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"google.golang.org/grpc"
 	"goshop/account_srv/biz"
-	"goshop/account_srv/internal"
 	"goshop/account_srv/proto/pb"
+	"goshop/internal"
 	"net"
 )
 

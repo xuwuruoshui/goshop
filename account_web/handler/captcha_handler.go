@@ -1,20 +1,38 @@
 package handler
 
 import (
+	"context"
 	"encoding/base64"
+	"errors"
 	"fmt"
 	"github.com/dchest/captcha"
+	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
+	"goshop/custom_error"
+	"goshop/internal"
 	"io"
+	"net/http"
 	"os"
+	"time"
 )
 
-func GenCaptcha()error{
+func CaptchaHandler(c *gin.Context){
+	mobile,ok := c.GetQuery("mobile")
+	if !ok{
+		c.JSON(http.StatusBadRequest,gin.H{
+			"msg":"参数错误",
+		})
+		return
+	}
+	
+
 	fileName := "data.png"
 	f, err := os.Create(fileName)
 	if err != nil {
 		zap.S().Error("GenCaptcha 失败")
-		return err
+		c.JSON(http.StatusBadRequest,gin.H{
+			"msg":errors.New(custom_error.GenCaptchaError),
+		})
 	}
 	defer f.Close()
 
@@ -25,6 +43,10 @@ func GenCaptcha()error{
 
 	if err != nil {
 		zap.S().Error("GenCaptcha 失败")
+		c.JSON(http.StatusBadRequest,gin.H{
+			"msg":errors.New(custom_error.GenCaptchaError),
+		})
+		return
 	}
 	fmt.Println(d)
 	captcha:=""
@@ -32,14 +54,21 @@ func GenCaptcha()error{
 		captcha+=fmt.Sprintf("%d",item)
 	}
 	fmt.Println(captcha)
+
+
 	b64, err := GetBase64(fileName)
 	if err != nil {
-		zap.S().Error("GenCaptcha 失败")
-		return err
+		zap.S().Error("GenCaptcha base64失败")
+		c.JSON(http.StatusBadRequest,gin.H{
+			"msg":errors.New(custom_error.GenCaptchaBase64Error),
+		})
+		return
 	}
-	fmt.Println(b64)
-
-	return nil
+	// 设置120秒过期时间放入redis
+	internal.RedisClient.Set(context.Background(),mobile,captcha,120*time.Second)
+	c.JSON(http.StatusOK,gin.H{
+		"captcha":b64,
+	})
 }
 
 func GetBase64(fileName string)(string,error){
