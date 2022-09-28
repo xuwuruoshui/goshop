@@ -2,6 +2,7 @@ package internal
 
 import (
 	"fmt"
+	"go.uber.org/zap"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
@@ -13,6 +14,14 @@ import (
 
 var DB *gorm.DB
 var err error
+
+type DataBase struct {
+	Host string `mapstructure:"host"`
+	Port int `mapstructure:"port"`
+	DBName string `mapstructure:"dbName"`
+	Username string `mapstructure:"username"`
+	Password string `mapstructure:"password"`
+}
 
 func InitDB(){
 	// logger配置
@@ -27,7 +36,13 @@ func InitDB(){
 	)
 
 	// 1.连接
-	dsn := "root:123456@tcp(192.168.0.132:3306)/goshop?charset=utf8mb4&parseTime=True&loc=Local"
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&parseTime=True&loc=Local",
+		ViperConf.DataBase.Username,
+		ViperConf.DataBase.Password,
+		ViperConf.DataBase.Host,
+		ViperConf.DataBase.Port,
+		ViperConf.DataBase.DBName)
+	zap.S().Info(dsn)
 	DB, err = gorm.Open(mysql.Open(dsn), &gorm.Config{Logger: log})
 	if err !=nil{
 		panic("Mysql connect faild:"+ err.Error())

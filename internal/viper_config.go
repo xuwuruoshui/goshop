@@ -20,6 +20,7 @@ func init(){
 }
 
 type ViperConfig struct {
+	DataBase DataBase `mapstructure:"database"`
 	Redis Redis `mapstructure:"redis"`
 	Consul Consul `mapstructure:"consul"`
 	AccountSrv AccountSrv `mapstructure:"accountSrv"`

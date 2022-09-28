@@ -1,3 +1,9 @@
+database:
+  host: "192.168.0.132"
+  port: 3306
+  dbName: "goshop"
+  username: "root"
+  password: "123456"
 redis:
   host: "192.168.0.132"
   port: 6379
