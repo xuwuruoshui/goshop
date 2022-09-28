@@ -16,8 +16,12 @@ func init(){
 	fmt.Println(ViperConf)
 	fmt.Println("Viper初始化完成")
 	InitRedis()
+
 }
 
 type ViperConfig struct {
-	Redis Redis`mapstructure:"redis"`
+	Redis Redis `mapstructure:"redis"`
+	Consul Consul `mapstructure:"consul"`
+	AccountSrv AccountSrv `mapstructure:"accountSrv"`
+	AccountWeb AccountWeb `mapstructure:"accountWeb"`
 }

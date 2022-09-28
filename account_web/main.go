@@ -8,7 +8,7 @@ import (
 )
 
 func main()  {
-	ip := flag.String("ip","127.0.0.1","输入IP")
+	ip := flag.String("ip","192.168.0.112","输入IP")
 	port := flag.Int("port",8081,"输入端口")
 	flag.Parse()
 	addr := fmt.Sprintf("%s:%d", *ip, *port)
@@ -19,6 +19,7 @@ func main()  {
 		accountGroup.POST("/login",handler.LoginByPasswordHandler)
 		accountGroup.GET("/captcha",handler.CaptchaHandler)
 	}
+	r.GET("/health",handler.HealthHandler)
 	r.Run(addr)
 }
 
