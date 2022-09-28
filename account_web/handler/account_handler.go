@@ -5,11 +5,14 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v4"
+	"github.com/hashicorp/consul/api"
+	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"goshop/account_srv/proto/pb"
 	"goshop/account_web/req"
 	"goshop/account_web/res"
 	"goshop/custom_error"
+	"goshop/internal"
 	"goshop/jwt_op"
 	"goshop/log"
 	"net/http"
@@ -17,6 +20,60 @@ import (
 	"strconv"
 	"time"
 )
+
+var (
+	accountSrvHost string
+	accountSrvPort int
+	client pb.AccountServiceClient
+)
+
+func initConsulClient()error{
+	// consul grpc
+	config := api.DefaultConfig()
+	consulAddr := fmt.Sprintf("%s:%d", internal.ViperConf.Consul.Host, internal.ViperConf.Consul.Port)
+	config.Address = consulAddr
+	consulClient, err := api.NewClient(config)
+	if err != nil {
+		zap.S().Error("AccountHandler,创建consul client失败:",err.Error())
+		return err
+	}
+
+	serverList, err := consulClient.Agent().ServicesWithFilter("Service==accountSrv")
+	if err != nil {
+		zap.S().Error("AccountHandler,consul获取服务列表失败:",err.Error())
+		return err
+	}
+	for _, v := range serverList {
+		accountSrvHost = v.Address
+		accountSrvPort = v.Port
+	}
+	return nil
+}
+
+func initGRPC() error{
+	grpcAddr := fmt.Sprintf("%s:%d",accountSrvHost,accountSrvPort)
+	conn, err := grpc.Dial(grpcAddr, grpc.WithInsecure())
+	if err != nil {
+		s := fmt.Sprintf("AccountListHandler-GRPC拨号失败:%s", err.Error())
+		log.Logger.Info(s)
+
+		return err
+	}
+
+	client = pb.NewAccountServiceClient(conn)
+	return nil
+}
+
+func init(){
+	err := initConsulClient()
+	if err != nil {
+		panic(err)
+	}
+	err = initGRPC()
+	if err != nil {
+		panic(err)
+	}
+}
 
 func HandleError(err error) string {
 	if err != nil {
@@ -43,20 +100,10 @@ func pb2Res(accountRes *pb.AccountRes) *res.Account4Res {
 
 // 获取账户列表
 func AccountListHandler(c *gin.Context) {
+
 	pageNo, _ := strconv.ParseInt(c.Query("pageNo"), 10, 32)
 	pageSize, _ := strconv.ParseInt(c.Query("pageSize"), 10, 32)
 
-	conn, err := grpc.Dial("127.0.0.1:9095", grpc.WithInsecure())
-	if err != nil {
-		s := fmt.Sprintf("AccountListHandler-GRPC拨号失败:%s", err.Error())
-		log.Logger.Info(s)
-		c.JSON(http.StatusOK, gin.H{
-			"msg": err.Error(),
-		})
-		return
-	}
-
-	client := pb.NewAccountServiceClient(conn)
 	list, err := client.GetAccountList(context.Background(), &pb.PagingRequest{
 		PageNo:   uint32(pageNo),
 		PageSize: uint32(pageSize),
