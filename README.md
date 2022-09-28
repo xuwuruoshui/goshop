@@ -181,79 +181,59 @@ func main(){
 }
 ```
 
-## Gin中调用Consul访问Grpc
+## ConsulClient GRPC抽离
 ```go
-func AccountListHandler(c *gin.Context) {
+var (
+	accountSrvHost string
+	accountSrvPort int
+	client pb.AccountServiceClient
+)
 
-	// 1、获取consul client
+func initConsulClient()error{
+	// consul grpc
 	config := api.DefaultConfig()
 	consulAddr := fmt.Sprintf("%s:%d", internal.ViperConf.Consul.Host, internal.ViperConf.Consul.Port)
 	config.Address = consulAddr
 	consulClient, err := api.NewClient(config)
 	if err != nil {
 		zap.S().Error("AccountHandler,创建consul client失败:",err.Error())
-		c.JSON(http.StatusInternalServerError,gin.H{
-			"msg":"服务器内部错误",
-		})
-		return
+		return err
 	}
-
-	accountSrvHost := ""
-	accountSrvPort := 0
 
 	serverList, err := consulClient.Agent().ServicesWithFilter("Service==accountSrv")
 	if err != nil {
 		zap.S().Error("AccountHandler,consul获取服务列表失败:",err.Error())
-		c.JSON(http.StatusInternalServerError,gin.H{
-			"msg":"服务器内部错误",
-		})
-		return
+		return err
 	}
 	for _, v := range serverList {
 		accountSrvHost = v.Address
 		accountSrvPort = v.Port
 	}
+	return nil
+}
 
-	// 2. gin获取传入参数
-	pageNo, _ := strconv.ParseInt(c.Query("pageNo"), 10, 32)
-	pageSize, _ := strconv.ParseInt(c.Query("pageSize"), 10, 32)
-
-	// 3.使用consul的地址
+func initGRPC() error{
 	grpcAddr := fmt.Sprintf("%s:%d",accountSrvHost,accountSrvPort)
 	conn, err := grpc.Dial(grpcAddr, grpc.WithInsecure())
 	if err != nil {
 		s := fmt.Sprintf("AccountListHandler-GRPC拨号失败:%s", err.Error())
 		log.Logger.Info(s)
-		c.JSON(http.StatusOK, gin.H{
-			"msg": err.Error(),
-		})
-		return
+
+		return err
 	}
 
-	client := pb.NewAccountServiceClient(conn)
-	list, err := client.GetAccountList(context.Background(), &pb.PagingRequest{
-		PageNo:   uint32(pageNo),
-		PageSize: uint32(pageSize),
-	})
+	client = pb.NewAccountServiceClient(conn)
+	return nil
+}
+
+func init(){
+	err := initConsulClient()
 	if err != nil {
-		s := fmt.Sprintf("AccountListHandler-GRPC拨号失败:%s", err.Error())
-		log.Logger.Info(s)
-		c.JSON(http.StatusOK, gin.H{
-			"msg": err.Error(),
-		})
-		return
+		panic(err)
 	}
-
-	var accountResList []*res.Account4Res
-	for _, item := range list.AccountList {
-		tmp := item
-		accountResList = append(accountResList, pb2Res(tmp))
+	err = initGRPC()
+	if err != nil {
+		panic(err)
 	}
-
-	c.JSON(http.StatusOK, gin.H{
-		"msg":   "ok",
-		"total": list.Total,
-		"data":  accountResList,
-	})
 }
 ```
