@@ -237,3 +237,76 @@ func init(){
 	}
 }
 ```
+
+# 配置中心
+## docker安装
+```shell
+git clone https://github.com/nacos-group/nacos-docker.git
+cd nacos-docker
+
+docker-compose -f example/standalone-derby.yaml up -d
+
+# 项目中
+go get -u github.com/nacos-group/nacos-sdk-go/v2
+```
+访问 http://ip:8848/nacos/index.html#/login
+用户名 :nacos 
+密码  :nacos
+
+## 命名空间
+添加dev、pro命名空间，隔离开发和生成环境
+
+## 获取配置
+```go
+func main(){
+
+
+	// nacos节点
+	serverConfigs := []constant.ServerConfig{
+		{
+			IpAddr:"192.168.0.132",
+			Port: 8848,
+		},
+	}
+
+	// 客户端命名空间配置
+	clientConfig := constant.ClientConfig{
+		NamespaceId:         "44fd93b5-beaf-43ed-a2bd-19d7e2c82c4a",
+		TimeoutMs:           5000,
+		NotLoadCacheAtStart: true,
+		LogDir:              "nacos/log",
+		CacheDir:            "nacos/cache",
+		LogLevel:            "debug",
+	}
+
+	// 创建动态配置客户端
+	// 方法1
+	//configClient, err := clients.CreateConfigClient(map[string]interface{}{
+	//	"serverConfigs": serverConfigs,
+	//	"clientConfig":  clientConfig,
+	//})
+
+	// 方法2
+	configClient, err := clients.NewConfigClient(
+		vo.NacosClientParam{
+			ClientConfig:  &clientConfig,
+			ServerConfigs: serverConfigs,
+		},
+	)
+
+	if err != nil {
+		panic(err)
+	}
+
+	// 获取要读取的配置
+	config, err := configClient.GetConfig(vo.ConfigParam{
+		DataId: "account.yml",
+		Group:  "dev",
+	})
+
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(config)
+}
+```
