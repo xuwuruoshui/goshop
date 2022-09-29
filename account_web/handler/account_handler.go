@@ -30,7 +30,7 @@ var (
 func initConsulClient()error{
 	// consul grpc
 	config := api.DefaultConfig()
-	consulAddr := fmt.Sprintf("%s:%d", internal.ViperConf.Consul.Host, internal.ViperConf.Consul.Port)
+	consulAddr := fmt.Sprintf("%s:%d", internal.AppConf.Consul.Host, internal.AppConf.Consul.Port)
 	config.Address = consulAddr
 	consulClient, err := api.NewClient(config)
 	if err != nil {

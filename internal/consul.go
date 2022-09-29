@@ -6,15 +6,15 @@ import (
 )
 
 type Consul struct {
-	Host string `mapstructure:"host"`
-	Port int `mapstructure:"port"`
+	Host string `mapstructure:"host" yaml:"host"`
+	Port int `mapstructure:"port" yaml:"port"`
 }
 
 // 服务注册、心跳
 func Reg(host,name,id string,port int,tags []string)error{
 	config := api.DefaultConfig()
-	h := ViperConf.Consul.Host
-	p := ViperConf.Consul.Port
+	h := AppConf.Consul.Host
+	p := AppConf.Consul.Port
 	config.Address = fmt.Sprintf("%s:%d",h,p)
 	client, err := api.NewClient(config)
 	if err != nil {
@@ -45,8 +45,8 @@ func Reg(host,name,id string,port int,tags []string)error{
 // 获取服务列表
 func GetServerList() error{
 	config := api.DefaultConfig()
-	h := ViperConf.Consul.Host
-	p := ViperConf.Consul.Port
+	h := AppConf.Consul.Host
+	p := AppConf.Consul.Port
 	config.Address = fmt.Sprintf("%s:%d",h,p)
 	client, err := api.NewClient(config)
 	if err != nil {
@@ -70,8 +70,8 @@ func GetServerList() error{
 // 过滤服务
 func FilterService() error{
 	config := api.DefaultConfig()
-	h := ViperConf.Consul.Host
-	p := ViperConf.Consul.Port
+	h := AppConf.Consul.Host
+	p := AppConf.Consul.Port
 	config.Address = fmt.Sprintf("%s:%d",h,p)
 	client, err := api.NewClient(config)
 	if err != nil {

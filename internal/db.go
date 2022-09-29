@@ -16,11 +16,11 @@ var DB *gorm.DB
 var err error
 
 type DataBase struct {
-	Host string `mapstructure:"host"`
-	Port int `mapstructure:"port"`
-	DBName string `mapstructure:"dbName"`
-	Username string `mapstructure:"username"`
-	Password string `mapstructure:"password"`
+	Host string `mapstructure:"host" yaml:"host"`
+	Port int `mapstructure:"port" yaml:"port"`
+	DBName string `mapstructure:"dbName" yaml:"dbName"`
+	Username string `mapstructure:"username" yaml:"username"`
+	Password string `mapstructure:"password" yaml:"password"`
 }
 
 func InitDB(){
@@ -37,11 +37,11 @@ func InitDB(){
 
 	// 1.连接
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&parseTime=True&loc=Local",
-		ViperConf.DataBase.Username,
-		ViperConf.DataBase.Password,
-		ViperConf.DataBase.Host,
-		ViperConf.DataBase.Port,
-		ViperConf.DataBase.DBName)
+		AppConf.DataBase.Username,
+		AppConf.DataBase.Password,
+		AppConf.DataBase.Host,
+		AppConf.DataBase.Port,
+		AppConf.DataBase.DBName)
 	zap.S().Info(dsn)
 	DB, err = gorm.Open(mysql.Open(dsn), &gorm.Config{Logger: log})
 	if err !=nil{

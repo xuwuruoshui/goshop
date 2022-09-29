@@ -3,11 +3,11 @@ package internal
 import "testing"
 
 func TestReg(t *testing.T) {
-	err := Reg(ViperConf.AccountWeb.Host,
-		ViperConf.AccountWeb.SrvName,
-		ViperConf.AccountWeb.SrvName,
-		ViperConf.AccountWeb.Port,
-		ViperConf.AccountWeb.Tags)
+	err := Reg(AppConf.AccountWeb.Host,
+		AppConf.AccountWeb.SrvName,
+		AppConf.AccountWeb.SrvName,
+		AppConf.AccountWeb.Port,
+		AppConf.AccountWeb.Tags)
 	if err != nil {
 		t.Log(err)
 		return

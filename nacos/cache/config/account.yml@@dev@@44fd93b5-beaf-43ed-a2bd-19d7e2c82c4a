@@ -27,3 +27,5 @@ accountWeb:
   tags:
     - happy
     - account_web
+jwt:
+  signingKey: 'd2b44df2-7f46-4526-b8e0-c231ca23c582'

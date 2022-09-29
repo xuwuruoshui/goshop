@@ -7,15 +7,15 @@ import (
 )
 
 type Redis struct {
-	Host string `mapstructure:"host"`
-	Port int `mapstructure:"port"`
+	Host string `mapstructure:"host" yaml:"host"`
+	Port int `mapstructure:"port" yaml:"port"`
 }
 
 var RedisClient *redis.Client
 
 func InitRedis(){
-	host := ViperConf.Redis.Host
-	port := ViperConf.Redis.Port
+	host := AppConf.Redis.Host
+	port := AppConf.Redis.Port
 	addr := fmt.Sprintf("%s:%d",host,port)
 	fmt.Println(addr)
 	RedisClient = redis.NewClient(&redis.Options{
