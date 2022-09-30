@@ -6,3 +6,23 @@
 {"level":"info","ts":1664375644.002686,"caller":"handler/account_handler.go:100","msg":"AccountListHandler-GRPC拨号失败:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing dial tcp :0: connectex: The requested address is not valid in its context.\""}
 {"level":"info","ts":1664437335.919572,"caller":"handler/account_handler.go:113","msg":"AccountListHandler-GRPC拨号失败:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing dial tcp :0: connectex: The requested address is not valid in its context.\""}
 {"level":"info","ts":1664437350.9482913,"caller":"handler/account_handler.go:113","msg":"AccountListHandler-GRPC拨号失败:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing dial tcp :0: connectex: The requested address is not valid in its context.\""}
+{"level":"info","ts":1664543761.8362024,"caller":"biz/account.go:65","msg":"被调用了"}
+{"level":"info","ts":1664543761.9390473,"caller":"biz/account.go:65","msg":"被调用了"}
+{"level":"info","ts":1664543761.943717,"caller":"biz/account.go:65","msg":"被调用了"}
+{"level":"info","ts":1664543761.9484718,"caller":"biz/account.go:65","msg":"被调用了"}
+{"level":"info","ts":1664543761.952963,"caller":"biz/account.go:65","msg":"被调用了"}
+{"level":"info","ts":1664543761.9574463,"caller":"biz/account.go:65","msg":"被调用了"}
+{"level":"info","ts":1664543761.9623263,"caller":"biz/account.go:65","msg":"被调用了"}
+{"level":"info","ts":1664543761.9779012,"caller":"biz/account.go:65","msg":"被调用了"}
+{"level":"info","ts":1664543761.9866526,"caller":"biz/account.go:65","msg":"被调用了"}
+{"level":"info","ts":1664543761.993728,"caller":"biz/account.go:65","msg":"被调用了"}
+{"level":"info","ts":1664543815.3236663,"caller":"biz/account.go:65","msg":"被调用了"}
+{"level":"info","ts":1664543815.3288484,"caller":"biz/account.go:65","msg":"被调用了"}
+{"level":"info","ts":1664543815.333486,"caller":"biz/account.go:65","msg":"被调用了"}
+{"level":"info","ts":1664543815.3405294,"caller":"biz/account.go:65","msg":"被调用了"}
+{"level":"info","ts":1664543815.343559,"caller":"biz/account.go:65","msg":"被调用了"}
+{"level":"info","ts":1664543815.350632,"caller":"biz/account.go:65","msg":"被调用了"}
+{"level":"info","ts":1664543815.3529348,"caller":"biz/account.go:65","msg":"被调用了"}
+{"level":"info","ts":1664543815.3570464,"caller":"biz/account.go:65","msg":"被调用了"}
+{"level":"info","ts":1664543815.361639,"caller":"biz/account.go:65","msg":"被调用了"}
+{"level":"info","ts":1664543815.3671088,"caller":"biz/account.go:65","msg":"被调用了"}

@@ -318,3 +318,40 @@ func main(){
 1. gRPC Client进行DNS解析
 2. 拉取负载均衡策略
 3. 对gRPC Server进行请求
+https://github.com/mbobakov/grpc-consul-resolver
+```go
+import (
+_ "github.com/mbobakov/grpc-consul-resolver" // It's important
+)
+
+func main(){
+
+	addr := fmt.Sprintf("%s:%d", internal.AppConf.Consul.Host, internal.AppConf.Consul.Port)
+	dialAddr := fmt.Sprintf("consul://%s/accountSrv?wait=14",addr)
+
+	conn, err := grpc.Dial(dialAddr, grpc.WithInsecure(), grpc.WithDefaultServiceConfig(`{"loadBalancingPolicy":"round_robin"}`))
+	if err != nil {
+		zap.S().Fatal(err)
+	}
+	defer conn.Close()
+
+	client := pb.NewAccountServiceClient(conn)
+
+	// 调用10次
+	for i := 0; i < 10; i++ {
+		list, err := client.GetAccountList(context.Background(), &pb.PagingRequest{
+
+			PageNo:   1,
+			PageSize: 3,
+		})
+		if err != nil {
+			zap.S().Fatal(err)
+		}
+
+		for index, item := range list.AccountList {
+			fmt.Println(index,"------------",item)
+		}
+	}
+
+}
+```

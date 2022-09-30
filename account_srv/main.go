@@ -1,8 +1,8 @@
 package main
 
 import (
-	"flag"
 	"fmt"
+	"github.com/google/uuid"
 	"github.com/hashicorp/consul/api"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/health"
@@ -10,6 +10,7 @@ import (
 	"goshop/account_srv/biz"
 	"goshop/account_srv/proto/pb"
 	"goshop/internal"
+	"goshop/utils"
 	"net"
 )
 
@@ -18,10 +19,13 @@ func init(){
 }
 
 func main(){
-	ip := flag.String("ip","192.168.0.112","输入ip")
-	port := flag.Int("port",9095,"输入端口")
-	flag.Parse()
-	addr := fmt.Sprintf("%s:%d",*ip,*port)
+	//ip := flag.String("ip","192.168.0.112","输入ip")
+	//port := flag.Int("port",9095,"输入端口")
+	//flag.Parse()
+	//addr := fmt.Sprintf("%s:%d",*ip,*port)
+
+	port := utils.GenRandPort()
+	addr := fmt.Sprintf("%s:%d",internal.AppConf.AccountSrv.Host,port)
 
 	server := grpc.NewServer()
 	pb.RegisterAccountServiceServer(server,&biz.AccountServer{})
@@ -39,21 +43,28 @@ func main(){
 	if err != nil {
 		panic(err)
 	}
-	checkAddr := fmt.Sprintf("%s:%d",internal.AppConf.AccountSrv.Host,internal.AppConf.AccountSrv.Port)
+	checkAddr := fmt.Sprintf("%s:%d",internal.AppConf.AccountSrv.Host,port)
 	check := &api.AgentServiceCheck{
 		GRPC: checkAddr,
 		Timeout: "3s",
 		Interval: "1s",
 		DeregisterCriticalServiceAfter: "5s",
 	}
+
+	randUUID := uuid.New().String()
 	reg := &api.AgentServiceRegistration{
+		// 服务名称(可以相同，但id必须不一样)
 		Name: internal.AppConf.AccountSrv.SrvName,
-		ID: internal.AppConf.AccountSrv.SrvName,
-		Port: internal.AppConf.AccountSrv.Port,
+		// 每个实例的id
+		ID: randUUID,
+		Port: port,
 		Tags: internal.AppConf.AccountSrv.Tags,
 		Address: internal.AppConf.AccountSrv.Host,
 		Check: check,
 	}
+
+	fmt.Println("当前节点端口:",port)
+	fmt.Println("当前节点ID:",randUUID)
 
 	err = client.Agent().ServiceRegister(reg)
 	if err != nil {
@@ -64,4 +75,5 @@ func main(){
 	if err != nil {
 		panic(err)
 	}
+
 }

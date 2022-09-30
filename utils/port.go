@@ -1,11 +1,10 @@
-package main
+package utils
 
 import (
-	"fmt"
 	"net"
 )
 
-func main(){
+func GenRandPort() (port int){
 
 	// 解析地址
 	addr, err := net.ResolveTCPAddr("tcp", "localhost:0")
@@ -24,9 +23,8 @@ func main(){
 	defer listener.Close()
 
 	// 为了拿到具体的端口值，我们转换成 *net.TCPAddr类型获取其Port
-	port := listener.Addr().(*net.TCPAddr).Port
-	fmt.Println(port)
+	port = listener.Addr().(*net.TCPAddr).Port
 
-
+	return
 }
 

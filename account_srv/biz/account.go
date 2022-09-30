@@ -3,6 +3,7 @@ package biz
 import (
 	"context"
 	"errors"
+	"fmt"
 	"gorm.io/gorm"
 	"goshop/account_srv/model"
 	"goshop/account_srv/proto/pb"
@@ -60,6 +61,8 @@ func (a *AccountServer) GetAccountList(ctx context.Context,req *pb.PagingRequest
 		accountRes := Model2Pb(account)
 		accountListRes.AccountList = append(accountListRes.AccountList,accountRes)
 	}
+
+	fmt.Println("被调用了")
 	return accountListRes,nil
 }
 func (a *AccountServer) GetAccountByMobile(ctx context.Context,req *pb.MobileRequest) (*pb.AccountRes, error) {
