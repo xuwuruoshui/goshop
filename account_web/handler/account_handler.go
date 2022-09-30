@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v4"
-	"github.com/hashicorp/consul/api"
+	_ "github.com/mbobakov/grpc-consul-resolver"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"goshop/account_srv/proto/pb"
@@ -21,43 +21,16 @@ import (
 	"time"
 )
 
-var (
-	accountSrvHost string
-	accountSrvPort int
-	client pb.AccountServiceClient
-)
+var client pb.AccountServiceClient
 
-func initConsulClient()error{
-	// consul grpc
-	config := api.DefaultConfig()
-	consulAddr := fmt.Sprintf("%s:%d", internal.AppConf.Consul.Host, internal.AppConf.Consul.Port)
-	config.Address = consulAddr
-	consulClient, err := api.NewClient(config)
-	if err != nil {
-		zap.S().Error("AccountHandler,创建consul client失败:",err.Error())
-		return err
-	}
-
-	serverList, err := consulClient.Agent().ServicesWithFilter("Service==accountSrv")
-	if err != nil {
-		zap.S().Error("AccountHandler,consul获取服务列表失败:",err.Error())
-		return err
-	}
-	for _, v := range serverList {
-		accountSrvHost = v.Address
-		accountSrvPort = v.Port
-	}
-	return nil
-}
 
 func initGRPC() error{
-	grpcAddr := fmt.Sprintf("%s:%d",accountSrvHost,accountSrvPort)
-	conn, err := grpc.Dial(grpcAddr, grpc.WithInsecure())
-	if err != nil {
-		s := fmt.Sprintf("AccountListHandler-GRPC拨号失败:%s", err.Error())
-		log.Logger.Info(s)
+	addr := fmt.Sprintf("%s:%d", internal.AppConf.Consul.Host, internal.AppConf.Consul.Port)
+	dialAddr := fmt.Sprintf("consul://%s/accountSrv?wait=14",addr)
 
-		return err
+	conn, err := grpc.Dial(dialAddr, grpc.WithInsecure(), grpc.WithDefaultServiceConfig(`{"loadBalancingPolicy":"round_robin"}`))
+	if err != nil {
+		zap.S().Fatal(err)
 	}
 
 	client = pb.NewAccountServiceClient(conn)
@@ -65,11 +38,7 @@ func initGRPC() error{
 }
 
 func init(){
-	err := initConsulClient()
-	if err != nil {
-		panic(err)
-	}
-	err = initGRPC()
+	err := initGRPC()
 	if err != nil {
 		panic(err)
 	}

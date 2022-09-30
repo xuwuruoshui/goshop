@@ -8,9 +8,10 @@ import (
 	"google.golang.org/grpc"
 	"goshop/account_srv/proto/pb"
 	"goshop/internal"
+	"testing"
 )
 
-func main(){
+func TestLoadBalance(t *testing.T){
 
 	addr := fmt.Sprintf("%s:%d", internal.AppConf.Consul.Host, internal.AppConf.Consul.Port)
 	dialAddr := fmt.Sprintf("consul://%s/accountSrv?wait=14",addr)

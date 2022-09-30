@@ -26,3 +26,4 @@
 {"level":"info","ts":1664543815.3570464,"caller":"biz/account.go:65","msg":"被调用了"}
 {"level":"info","ts":1664543815.361639,"caller":"biz/account.go:65","msg":"被调用了"}
 {"level":"info","ts":1664543815.3671088,"caller":"biz/account.go:65","msg":"被调用了"}
+{"level":"info","ts":1664544771.1870599,"caller":"handler/account_handler.go:82","msg":"AccountListHandler-GRPC拨号失败:rpc error: code = Unavailable desc = last connection error: connection error: desc = \"transport: Error while dialing dial tcp: address consul://192.168.0.132:8500/accountSrv: too many colons in address\""}
