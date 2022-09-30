@@ -308,5 +308,13 @@ func main(){
 		panic(err)
 	}
 	fmt.Println(config)
+	
+	// TODO 将config转为AppConfig结构体,配置就可以从AppConfig中获取了
+	// yaml.Unmarshal()
 }
 ```
+
+# 负载均衡
+1. gRPC Client进行DNS解析
+2. 拉取负载均衡策略
+3. 对gRPC Server进行请求
