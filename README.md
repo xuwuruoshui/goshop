@@ -318,10 +318,13 @@ func main(){
 1. gRPC Client进行DNS解析
 2. 拉取负载均衡策略
 3. 对gRPC Server进行请求
-https://github.com/mbobakov/grpc-consul-resolver
+
+使用步骤
+1. 运行时,port自动分配
+2. 修改consul配置中各个服务的port(不是consul的port)
 ```go
 import (
-_ "github.com/mbobakov/grpc-consul-resolver" // It's important
+  _ "github.com/mbobakov/grpc-consul-resolver" // It's important
 )
 
 func main(){

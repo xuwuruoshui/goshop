@@ -34,7 +34,10 @@ func main(){
 		panic(err)
 	}
 
+	// 1、GRPC注册健康检查服务
 	grpc_health_v1.RegisterHealthServer(server,health.NewServer())
+
+	// 2.创建Consul客户端
 	config := api.DefaultConfig()
 	config.Address = fmt.Sprintf("%s:%d",
 		internal.AppConf.Consul.Host,
@@ -43,6 +46,9 @@ func main(){
 	if err != nil {
 		panic(err)
 	}
+
+	// 3.Consul设置GRPC健康检查地址
+	// 超时3秒,1秒检测一次,超过5秒注销
 	checkAddr := fmt.Sprintf("%s:%d",internal.AppConf.AccountSrv.Host,port)
 	check := &api.AgentServiceCheck{
 		GRPC: checkAddr,
@@ -51,6 +57,7 @@ func main(){
 		DeregisterCriticalServiceAfter: "5s",
 	}
 
+	// 4.在Consul上注册服务
 	randUUID := uuid.New().String()
 	reg := &api.AgentServiceRegistration{
 		// 服务名称(可以相同，但id必须不一样)
@@ -63,13 +70,13 @@ func main(){
 		Check: check,
 	}
 
-	fmt.Println("当前节点端口:",port)
-	fmt.Println("当前节点ID:",randUUID)
-
 	err = client.Agent().ServiceRegister(reg)
 	if err != nil {
 		panic(err)
 	}
+
+	fmt.Println("当前节点端口:",port)
+	fmt.Println("当前节点ID:",randUUID)
 
 	err = server.Serve(listen)
 	if err != nil {
