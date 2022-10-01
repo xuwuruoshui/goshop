@@ -1,12 +1,12 @@
 package main
 
 import (
+	"account/account_web/handler"
+	"account/internal"
 	"flag"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
-	"goshop/account_web/handler"
-	"goshop/internal"
 )
 
 func init(){

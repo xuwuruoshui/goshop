@@ -1,13 +1,13 @@
 package main
 
 import (
+	"account/account_srv/proto/pb"
+	"account/internal"
 	"context"
 	"fmt"
 	_ "github.com/mbobakov/grpc-consul-resolver"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
-	"goshop/account_srv/proto/pb"
-	"goshop/internal"
 	"testing"
 )
 

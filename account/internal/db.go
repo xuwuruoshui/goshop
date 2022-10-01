@@ -1,12 +1,12 @@
 package internal
 
 import (
+	"account/account_srv/model"
 	"fmt"
 	"go.uber.org/zap"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
-	"goshop/account_srv/model"
 	"log"
 	"os"
 	"time"

@@ -1,6 +1,8 @@
 package handler
 
 import (
+	"account/custom_error"
+	"account/internal"
 	"context"
 	"encoding/base64"
 	"errors"
@@ -8,8 +10,6 @@ import (
 	"github.com/dchest/captcha"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
-	"goshop/custom_error"
-	"goshop/internal"
 	"io"
 	"net/http"
 	"os"

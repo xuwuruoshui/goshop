@@ -1,16 +1,16 @@
 package main
 
 import (
+	"account/account_srv/biz"
+	"account/account_srv/proto/pb"
+	"account/internal"
+	"account/utils"
 	"fmt"
 	"github.com/google/uuid"
 	"github.com/hashicorp/consul/api"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/health"
 	"google.golang.org/grpc/health/grpc_health_v1"
-	"goshop/account_srv/biz"
-	"goshop/account_srv/proto/pb"
-	"goshop/internal"
-	"goshop/utils"
 	"net"
 )
 

@@ -1,6 +1,13 @@
 package handler
 
 import (
+	"account/account_srv/proto/pb"
+	"account/account_web/req"
+	"account/account_web/res"
+	"account/custom_error"
+	"account/internal"
+	"account/jwt_op"
+	"account/log"
 	"context"
 	"fmt"
 	"github.com/gin-gonic/gin"
@@ -8,13 +15,6 @@ import (
 	_ "github.com/mbobakov/grpc-consul-resolver"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
-	"goshop/account_srv/proto/pb"
-	"goshop/account_web/req"
-	"goshop/account_web/res"
-	"goshop/custom_error"
-	"goshop/internal"
-	"goshop/jwt_op"
-	"goshop/log"
 	"net/http"
 	"regexp"
 	"strconv"

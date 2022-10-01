@@ -1,10 +1,10 @@
 package biz
 
 import (
+	"account/account_srv/proto/pb"
+	"account/internal"
 	"context"
 	"fmt"
-	"goshop/account_srv/proto/pb"
-	"goshop/internal"
 	"testing"
 )
 

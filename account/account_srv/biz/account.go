@@ -1,15 +1,15 @@
 package biz
 
 import (
+	"account/account_srv/model"
+	"account/account_srv/proto/pb"
+	"account/comm"
+	"account/custom_error"
+	"account/internal"
 	"context"
 	"errors"
 	"fmt"
 	"gorm.io/gorm"
-	"goshop/account_srv/model"
-	"goshop/account_srv/proto/pb"
-	"goshop/comm"
-	"goshop/custom_error"
-	"goshop/internal"
 )
 
 type AccountServer struct {
