@@ -6,7 +6,7 @@ import (
 	"github.com/nacos-group/nacos-sdk-go/v2/common/constant"
 	"github.com/nacos-group/nacos-sdk-go/v2/vo"
 	"github.com/spf13/viper"
-	"gopkg.in/yaml.v2"
+	"gopkg.in/yaml.v3"
 )
 
 var NacosConf *Nacos = &Nacos{}
@@ -92,8 +92,8 @@ func init(){
 type App struct {
 	DataBase DataBase `mapstructure:"database" yaml:"database"`
 	Redis Redis `mapstructure:"redis" yaml:"redis"`
-	Consul Consul `mapstructure:"consul" yaml:"consul"`
-	AccountSrv AccountSrv `mapstructure:"accountSrv" yaml:"accountSrv"`
-	AccountWeb AccountWeb `mapstructure:"accountWeb" yaml:"accountWeb"`
-	JWT JWT `mapstructure:"jwt" yaml:"jwt"`
+	Consul     Consul     `mapstructure:"consul" yaml:"consul"`
+	ProductSrv ProductSrv `mapstructure:"productSrv" yaml:"productSrv"`
+	ProductWeb ProductWeb `mapstructure:"productWeb" yaml:"productWeb"`
+	JWT        JWT        `mapstructure:"jwt" yaml:"jwt"`
 }

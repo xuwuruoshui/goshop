@@ -7,11 +7,11 @@ import (
 
 func TestReg(t *testing.T) {
 	randUUID := uuid.New().String()
-	err := Reg(AppConf.AccountWeb.Host,
-		AppConf.AccountWeb.SrvName,
+	err := Reg(AppConf.ProductWeb.Host,
+		AppConf.ProductWeb.SrvName,
 		randUUID,
-		AppConf.AccountWeb.Port,
-		AppConf.AccountWeb.Tags)
+		AppConf.ProductWeb.Port,
+		AppConf.ProductWeb.Tags)
 	if err != nil {
 		t.Log(err)
 		return

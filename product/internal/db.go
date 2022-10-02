@@ -1,7 +1,6 @@
 package internal
 
 import (
-	"account/account_srv/model"
 	"fmt"
 	"go.uber.org/zap"
 	"gorm.io/driver/mysql"
@@ -9,6 +8,7 @@ import (
 	"gorm.io/gorm/logger"
 	"log"
 	"os"
+	"product/model"
 	"time"
 )
 
@@ -48,7 +48,7 @@ func InitDB(){
 		panic("Mysql connect faild:"+ err.Error())
 	}
 
-	err = DB.AutoMigrate(&model.Account{})
+	err = DB.AutoMigrate(&model.Product{},&model.Advertise{},&model.Brand{},&model.Category{})
 	if err !=nil{
 		fmt.Println(err)
 	}

@@ -1,13 +1,13 @@
 host: "192.168.0.132"
 port: 8848
 namespace: "44fd93b5-beaf-43ed-a2bd-19d7e2c82c4a"
-dataId: "account.yml"
+dataId: "product.yml"
 group: "dev"
 
 #database:
 #  host: "192.168.0.132"
 #  port: 3306
-#  dbName: "goshop"
+#  dbName: "account"
 #  username: "root"
 #  password: "123456"
 #redis:
