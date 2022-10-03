@@ -12,4 +12,7 @@ const (
 	CategoryMarshalFailed = "分类序列化失败"
 	InternalError = "服务端错误"
 
+	ProductCategoryBrandNotExist = "分类品牌不存在"
+	DelCategoryBrandFaild = "删除分类品牌失败"
+
 )

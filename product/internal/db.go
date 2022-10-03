@@ -48,7 +48,7 @@ func InitDB(){
 		panic("Mysql connect faild:"+ err.Error())
 	}
 
-	err = DB.AutoMigrate(&model.Product{},&model.Advertise{},&model.Brand{},&model.Category{})
+	err = DB.AutoMigrate(&model.Product{},&model.Advertise{},&model.Brand{},&model.Category{},&model.ProductCategoryBrand{})
 	if err !=nil{
 		fmt.Println(err)
 	}

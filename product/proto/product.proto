@@ -61,9 +61,9 @@ message AdvertiseItemRes{
 }
 
 message CategoryBrandReq{
-  int32 id = 1;
-  BrandItemRes brand= 2;
-  CategoryItemRes category = 3;
+  int32 id=1;
+  int32 brandId=2;
+  int32 categoryId=3;
 }
 
 message CategoryBrandRes{
