@@ -6,5 +6,5 @@ type Category struct {
 	ParentCategoryId int32
 	ParentCategory *Category
 	SubCategory []*Category `gorm:"foreignKey:ParentCategoryId;references:Id"`
-
+	Level            int32       `gorm:"type:int;default:1"`
 }
