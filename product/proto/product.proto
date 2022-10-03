@@ -190,8 +190,13 @@ message ProductItemRes{
   bool isPop = 16;
   bool selling = 17;
   int64 addTime = 18;
-  CategoryItemRes category = 19;
+  CategoryShortItemRes category = 19;
   BrandItemRes brand = 20;
+}
+
+message CategoryShortItemRes{
+  int32 id=1;
+  string name=2;
 }
 
 message ProductRes{

@@ -40,8 +40,11 @@ func (p ProductServer) GetProductDetail(ctx context.Context, req *pb.ProductItem
 	panic("implement me")
 }
 
-func (p ProductServer) mustEmbedUnimplementedProductServiceServer() {
-	//TODO implement me
-	panic("implement me")
-}
+
+
+
+
+
+
+
 
