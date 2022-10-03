@@ -48,7 +48,7 @@ type ProductServiceClient interface {
 	UpdateCategoryBrand(ctx context.Context, in *CategoryBrandReq, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	DeleteCategoryBrand(ctx context.Context, in *CategoryBrandReq, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// 广告
-	AdvertiseList(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*AdvertiseListRes, error)
+	AdvertiseList(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*AdvertiseRes, error)
 	CreateAdvertise(ctx context.Context, in *AdvertiseReq, opts ...grpc.CallOption) (*AdvertiseItemRes, error)
 	UpdateAdvertise(ctx context.Context, in *AdvertiseReq, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	DeleteAdvertise(ctx context.Context, in *AdvertiseReq, opts ...grpc.CallOption) (*emptypb.Empty, error)
@@ -242,8 +242,8 @@ func (c *productServiceClient) DeleteCategoryBrand(ctx context.Context, in *Cate
 	return out, nil
 }
 
-func (c *productServiceClient) AdvertiseList(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*AdvertiseListRes, error) {
-	out := new(AdvertiseListRes)
+func (c *productServiceClient) AdvertiseList(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*AdvertiseRes, error) {
+	out := new(AdvertiseRes)
 	err := c.cc.Invoke(ctx, "/ProductService/AdvertiseList", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -307,7 +307,7 @@ type ProductServiceServer interface {
 	UpdateCategoryBrand(context.Context, *CategoryBrandReq) (*emptypb.Empty, error)
 	DeleteCategoryBrand(context.Context, *CategoryBrandReq) (*emptypb.Empty, error)
 	// 广告
-	AdvertiseList(context.Context, *emptypb.Empty) (*AdvertiseListRes, error)
+	AdvertiseList(context.Context, *emptypb.Empty) (*AdvertiseRes, error)
 	CreateAdvertise(context.Context, *AdvertiseReq) (*AdvertiseItemRes, error)
 	UpdateAdvertise(context.Context, *AdvertiseReq) (*emptypb.Empty, error)
 	DeleteAdvertise(context.Context, *AdvertiseReq) (*emptypb.Empty, error)
@@ -378,7 +378,7 @@ func (UnimplementedProductServiceServer) UpdateCategoryBrand(context.Context, *C
 func (UnimplementedProductServiceServer) DeleteCategoryBrand(context.Context, *CategoryBrandReq) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteCategoryBrand not implemented")
 }
-func (UnimplementedProductServiceServer) AdvertiseList(context.Context, *emptypb.Empty) (*AdvertiseListRes, error) {
+func (UnimplementedProductServiceServer) AdvertiseList(context.Context, *emptypb.Empty) (*AdvertiseRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AdvertiseList not implemented")
 }
 func (UnimplementedProductServiceServer) CreateAdvertise(context.Context, *AdvertiseReq) (*AdvertiseItemRes, error) {
