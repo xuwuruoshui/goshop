@@ -53,3 +53,24 @@ func InitDB(){
 		fmt.Println(err)
 	}
 }
+
+
+func Paginate(pageNo,pageSize int)func(db *gorm.DB)*gorm.DB{
+	return func(db *gorm.DB) *gorm.DB {
+		// 默认第一页
+		if pageNo==0{
+			pageNo=1
+		}
+
+		// 最大页数100,默认10
+		if pageSize>100{
+			pageSize=100
+		}else if pageSize<=0{
+			pageSize=10
+		}
+
+		// 分页
+		offset := (pageNo-1)*pageSize
+		return db.Offset(offset).Limit(pageSize)
+	}
+}
