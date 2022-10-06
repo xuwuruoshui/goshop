@@ -96,4 +96,5 @@ type App struct {
 	ProductSrv ProductSrv `mapstructure:"productSrv" yaml:"productSrv"`
 	ProductWeb ProductWeb `mapstructure:"productWeb" yaml:"productWeb"`
 	JWT        JWT        `mapstructure:"jwt" yaml:"jwt"`
+	Debug      bool		  `mapstructure:"debug" yaml:"debug"`
 }

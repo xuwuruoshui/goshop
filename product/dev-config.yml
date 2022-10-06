@@ -4,6 +4,7 @@ namespace: "44fd93b5-beaf-43ed-a2bd-19d7e2c82c4a"
 dataId: "product.yml"
 group: "dev"
 
+
 #database:
 #  host: "192.168.0.132"
 #  port: 3306

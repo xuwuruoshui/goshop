@@ -123,7 +123,7 @@ func (p ProductServer) UpdateCategoryBrand(ctx context.Context, req *pb.Category
 func (p ProductServer) DeleteCategoryBrand(ctx context.Context, req *pb.CategoryBrandReq) (*emptypb.Empty, error) {
 	tx := internal.DB.Delete(&model.ProductCategoryBrand{}, req.Id)
 	if tx.RowsAffected<1{
-		return nil,errors.New(custom_error.DelCategoryBrandFaild)
+		return nil,errors.New(custom_error.DelCategoryBrandFailed)
 	}
 
 	return &emptypb.Empty{},nil

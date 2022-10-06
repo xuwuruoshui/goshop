@@ -2,254 +2,106 @@ package biz
 
 import (
 	"context"
-	"product/model"
+	"fmt"
+	_ "github.com/mbobakov/grpc-consul-resolver"
+	"go.uber.org/zap"
+	"google.golang.org/grpc"
+	"product/internal"
 	"product/proto/pb"
-	"reflect"
 	"testing"
 )
 
-func TestConvertProductModel2Pb(t *testing.T) {
-	type args struct {
-		pro model.Product
+var client pb.ProductServiceClient
+
+
+func initGRPC() error{
+	addr := fmt.Sprintf("%s:%d", internal.AppConf.Consul.Host, internal.AppConf.Consul.Port)
+	dialAddr := fmt.Sprintf("consul://%s/productSrv?wait=14",addr)
+
+	conn, err := grpc.Dial(dialAddr, grpc.WithInsecure(), grpc.WithDefaultServiceConfig(`{"loadBalancingPolicy":"round_robin"}`))
+	if err != nil {
+		zap.S().Fatal(err)
 	}
-	tests := []struct {
-		name string
-		args args
-		want *pb.ProductItemRes
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := ConvertProductModel2Pb(tt.args.pro); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("ConvertProductModel2Pb() = %v, want %v", got, tt.want)
-			}
-		})
+
+	client = pb.NewProductServiceClient(conn)
+	return nil
+}
+
+func init(){
+	err := initGRPC()
+	if err != nil {
+		panic(err)
 	}
 }
 
-func TestConvertReq2Model(t *testing.T) {
-	type args struct {
-		req      *pb.CreateProductItem
-		category *model.Category
-		brand    *model.Brand
-	}
-	tests := []struct {
-		name string
-		args args
-		want *model.Product
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := ConvertReq2Model(tt.args.req, tt.args.category, tt.args.brand); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("ConvertReq2Model() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
 
 func TestProductServer_BatchGetProduct(t *testing.T) {
-	type fields struct {
-		UnimplementedProductServiceServer pb.UnimplementedProductServiceServer
-	}
-	type args struct {
-		ctx context.Context
-		req *pb.BatchProductIdReq
-	}
-	tests := []struct {
-		name    string
-		fields  fields
-		args    args
-		want    *pb.ProductRes
-		wantErr bool
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			p := ProductServer{
-				UnimplementedProductServiceServer: tt.fields.UnimplementedProductServiceServer,
-			}
-			got, err := p.BatchGetProduct(tt.args.ctx, tt.args.req)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("BatchGetProduct() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("BatchGetProduct() got = %v, want %v", got, tt.want)
-			}
+	ids := []int32{2, 3, 4}
+	res, err := client.BatchGetProduct(context.Background(),
+		&pb.BatchProductIdReq{
+			Ids: ids,
 		})
+	if err != nil {
+		t.Fatal(err)
 	}
+	fmt.Println(res)
 }
 
 func TestProductServer_CreateProduct(t *testing.T) {
-	type fields struct {
-		UnimplementedProductServiceServer pb.UnimplementedProductServiceServer
-	}
-	type args struct {
-		ctx context.Context
-		req *pb.CreateProductItem
-	}
-	tests := []struct {
-		name    string
-		fields  fields
-		args    args
-		want    *pb.ProductItemRes
-		wantErr bool
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			p := ProductServer{
-				UnimplementedProductServiceServer: tt.fields.UnimplementedProductServiceServer,
-			}
-			got, err := p.CreateProduct(tt.args.ctx, tt.args.req)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("CreateProduct() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("CreateProduct() got = %v, want %v", got, tt.want)
-			}
+	for i := 0; i < 8; i++ {
+		res, err := client.CreateProduct(context.Background(), &pb.CreateProductItem{
+			Name:        fmt.Sprintf("黄金牛排%d", i),
+			Sn:          "123456789",
+			CategoryId:  22,
+			Price:       359.00,
+			RealPrice:   199.00,
+			ShortDesc:   "",
+			ProductDesc: "",
+			Images:      nil,
+			DescImages:  nil,
+			CoverImage:  "https://space.bilibili.com/375038855",
+			IsNew:       true,
+			IsPop:       true,
+			Selling:     true,
+			BrandId:     18,
+			FavNum:      6666,
+			SoldNum:     5432,
+			IsShipFree:  false,
 		})
+		if err != nil {
+			t.Fatal(err)
+		}
+		fmt.Println(res)
 	}
 }
 
 func TestProductServer_DeleteProduct(t *testing.T) {
-	type fields struct {
-		UnimplementedProductServiceServer pb.UnimplementedProductServiceServer
-	}
-	type args struct {
-		ctx context.Context
-		req *pb.ProductDelItem
-	}
-	tests := []struct {
-		name    string
-		fields  fields
-		args    args
-		want    *emptypb.Empty
-		wantErr bool
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			p := ProductServer{
-				UnimplementedProductServiceServer: tt.fields.UnimplementedProductServiceServer,
-			}
-			got, err := p.DeleteProduct(tt.args.ctx, tt.args.req)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("DeleteProduct() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("DeleteProduct() got = %v, want %v", got, tt.want)
-			}
+	client.DeleteProduct(context.Background(),
+		&pb.ProductDelItem{
+			Id: 8,
 		})
-	}
 }
 
 func TestProductServer_GetProductDetail(t *testing.T) {
-	type fields struct {
-		UnimplementedProductServiceServer pb.UnimplementedProductServiceServer
-	}
-	type args struct {
-		ctx context.Context
-		req *pb.ProductItemReq
-	}
-	tests := []struct {
-		name    string
-		fields  fields
-		args    args
-		want    *pb.ProductItemRes
-		wantErr bool
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			p := ProductServer{
-				UnimplementedProductServiceServer: tt.fields.UnimplementedProductServiceServer,
-			}
-			got, err := p.GetProductDetail(tt.args.ctx, tt.args.req)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("GetProductDetail() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("GetProductDetail() got = %v, want %v", got, tt.want)
-			}
-		})
-	}
+
 }
 
 func TestProductServer_ProductList(t *testing.T) {
-	type fields struct {
-		UnimplementedProductServiceServer pb.UnimplementedProductServiceServer
+	res, err := client.ProductList(context.Background(), &pb.ProductConditionReq{
+		PageNo:   2,
+		PageSize: 5,
+	})
+	if err != nil {
+		t.Fatal(err)
 	}
-	type args struct {
-		ctx context.Context
-		req *pb.ProductConditionReq
-	}
-	tests := []struct {
-		name    string
-		fields  fields
-		args    args
-		want    *pb.ProductRes
-		wantErr bool
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			p := ProductServer{
-				UnimplementedProductServiceServer: tt.fields.UnimplementedProductServiceServer,
-			}
-			got, err := p.ProductList(tt.args.ctx, tt.args.req)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("ProductList() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("ProductList() got = %v, want %v", got, tt.want)
-			}
-		})
-	}
+	fmt.Println(res.ItemList)
 }
 
 func TestProductServer_UpdateProduct(t *testing.T) {
-	type fields struct {
-		UnimplementedProductServiceServer pb.UnimplementedProductServiceServer
-	}
-	type args struct {
-		ctx context.Context
-		req *pb.CreateProductItem
-	}
-	tests := []struct {
-		name    string
-		fields  fields
-		args    args
-		want    *emptypb.Empty
-		wantErr bool
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			p := ProductServer{
-				UnimplementedProductServiceServer: tt.fields.UnimplementedProductServiceServer,
-			}
-			got, err := p.UpdateProduct(tt.args.ctx, tt.args.req)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("UpdateProduct() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("UpdateProduct() got = %v, want %v", got, tt.want)
-			}
-		})
-	}
+	client.UpdateProduct(context.Background(), &pb.CreateProductItem{
+		Id:         8,
+		CategoryId: 17,
+		BrandId:    19,
+		Name:       "战斧牛排66666",
+	})
 }

@@ -10,9 +10,14 @@ const (
 
 	CategoryNotExist = "分类不存在"
 	CategoryMarshalFailed = "分类序列化失败"
-	InternalError = "服务端错误"
+
 
 	ProductCategoryBrandNotExist = "分类品牌不存在"
-	DelCategoryBrandFaild = "删除分类品牌失败"
+	DelCategoryBrandFailed       = "删除分类品牌失败"
 
+	DelProductFailed = "删除产品失败"
+	ProductNoExist = "产品不存在"
+
+	InternalError = "服务端错误"
+	ParamError = "参数错误"
 )

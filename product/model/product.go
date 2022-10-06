@@ -13,13 +13,13 @@ type Product struct {
 	BrandId int32 `gorm:"type:int;not null"`
 	Brand *Brand
 	// 是否正在销售
-	Selling bool `gorm:"default:false"`
+	Selling bool `gorm:"default:false;not null"`
 	// 是否包邮
-	ShipFree bool `gorm:"default:false"`
+	IsShipFree bool `gorm:"default:false;not null"`
 	// 是否热卖
-	IsPop bool `gorm:"default:false"`
+	IsPop bool `gorm:"default:false;not null"`
 	// 是否新品
-	IsNew bool `gorm:"default:false"`
+	IsNew bool `gorm:"default:false;not null"`
 
 	Name string `gorm:"type:varchar(64);not null"`
 	// 编号
