@@ -33,9 +33,9 @@ func Reg(host,name,id string,port int,tags []string)error{
 		HTTP:     severAddr,
 		Timeout:  "3s",
 		// 每秒测一次
-		Interval: "1s",
+		Interval: "5s",
 		// 5秒不通自动注销
-		DeregisterCriticalServiceAfter: "5s",
+		DeregisterCriticalServiceAfter: "20s",
 	}
 	agentServiceRegistration.Check = &check
 

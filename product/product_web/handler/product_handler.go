@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"product/custom_error"
 	"product/internal"
+	"product/product_web/req"
 	"product/proto/pb"
 	"strconv"
 )
@@ -112,9 +113,140 @@ func ProductListHandler(c *gin.Context) {
 	})
 }
 
+func AddHandler(c *gin.Context){
+	var productReq req.ProductReq
+	err := c.ShouldBindJSON(&productReq)
+	if err != nil {
+		zap.S().Error(err)
+		c.JSON(http.StatusOK,gin.H{
+			"msg": "参数解析错误",
+		})
+		return
+	}
+
+	req2Pb := ConvertProductReq2Pb(productReq)
+	res, err := client.CreateProduct(context.Background(), req2Pb)
+	if err != nil {
+		zap.S().Error(err)
+		c.JSON(http.StatusOK,gin.H{
+			"msg": "添加产品失败",
+		})
+		return
+	}
+	c.JSON(http.StatusOK,gin.H{
+		"msg":"",
+		"data": res,
+	})
+}
+
+func DetailHandler(c *gin.Context){
+	idStr := c.Param("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		zap.S().Error(err)
+		c.JSON(http.StatusOK,gin.H{
+			"msg":"参数错误",
+		})
+		return
+	}
+
+	res, err := client.GetProductDetail(context.Background(), &pb.ProductItemReq{Id: int32(id)})
+	if err != nil {
+		zap.S().Error(err)
+		c.JSON(http.StatusOK,gin.H{
+			"msg":"获取详情失败",
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK,gin.H{
+		"msg":"",
+		"data":res,
+	})
+}
+
+func UpdateHandler(c *gin.Context){
+	var productReq req.ProductReq
+	err := c.ShouldBindJSON(&productReq)
+	if err != nil {
+		zap.S().Error(err)
+		c.JSON(http.StatusOK,gin.H{
+			"msg": "参数解析错误",
+		})
+		return
+	}
+
+	req2Pb := ConvertProductReq2Pb(productReq)
+
+	_, err = client.UpdateProduct(context.Background(),req2Pb)
+	if err != nil {
+		zap.S().Error(err)
+		c.JSON(http.StatusOK,gin.H{
+			"msg": "参数解析错误",
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK,gin.H{
+		"msg":"",
+	})
+}
+
+
+func DelHandler(c *gin.Context){
+	idStr := c.Param("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		zap.S().Error(err)
+		c.JSON(http.StatusOK,gin.H{
+			"msg":"参数错误",
+		})
+		return
+	}
+
+	_, err = client.DeleteProduct(context.Background(), &pb.ProductDelItem{Id: int32(id)})
+	if err != nil {
+		zap.S().Error(err)
+		c.JSON(http.StatusOK,gin.H{
+			"msg":"删除产品失败",
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK,gin.H{
+		"msg":"",
+	})
+}
+
 // 健康检查
 func HealthHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"msg": "OK",
 	})
+}
+
+
+func ConvertProductReq2Pb(productReq req.ProductReq) *pb.CreateProductItem {
+	item := pb.CreateProductItem{
+		Name:        productReq.Name,
+		Sn:          productReq.SN,
+		Price:       productReq.Price,
+		RealPrice:   productReq.RealPrice,
+		ShortDesc:   productReq.ShortDesc,
+		ProductDesc: productReq.Desc,
+		Images:      productReq.Images,
+		DescImages:  productReq.DescImages,
+		CoverImage:  productReq.CoverImage,
+		IsNew:       productReq.IsNew,
+		IsPop:       productReq.IsPop,
+		Selling:     productReq.Selling,
+		CategoryId:  productReq.CategoryId,
+		BrandId:     productReq.BrandId,
+		FavNum:      productReq.FavNum,
+		SoldNum:     productReq.SoldNum,
+	}
+	if productReq.Id > 0 {
+		item.Id = productReq.Id
+	}
+	return &item
 }

@@ -34,6 +34,10 @@ func main()  {
 	group := r.Group("/v1/product")
 	{
 		group.GET("/list",handler.ProductListHandler)
+		group.GET("/:id",handler.DetailHandler)
+		group.POST("/",handler.AddHandler)
+		group.PUT("/",handler.UpdateHandler)
+		group.DELETE("/:id",handler.DelHandler)
 	}
 	r.GET("/health",handler.HealthHandler)
 	r.Run(addr)
