@@ -1,0 +1,32 @@
+database:
+  host: "192.168.0.132"
+  port: 3306
+  dbName: "stock"
+  username: "root"
+  password: "123456"
+redis:
+  host: "192.168.0.132"
+  port: 6379
+
+consul:
+  host: "192.168.0.132"
+  port: 8500
+
+stockSrv:
+  srvName: productSrv
+  host: "192.168.0.112"
+  port: 9097
+  tags:
+    - happy
+    - stock_srv
+
+stockWeb:
+  srvName: productWeb
+  host: "192.168.0.112"
+  port: 8083
+  tags:
+    - happy
+    - stock_web
+jwt:
+  signingKey: 'd2b44df2-7f46-4526-b8e0-c231ca23c582'
+debug: true

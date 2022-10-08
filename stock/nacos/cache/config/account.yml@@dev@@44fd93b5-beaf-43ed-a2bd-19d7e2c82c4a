@@ -1,0 +1,31 @@
+database:
+  host: "192.168.0.132"
+  port: 3306
+  dbName: "account"
+  username: "root"
+  password: "123456"
+redis:
+  host: "192.168.0.132"
+  port: 6379
+
+consul:
+  host: "192.168.0.132"
+  port: 8500
+
+accountSrv:
+  srvName: accountSrv
+  host: "192.168.0.112"
+  port: 9095
+  tags:
+    - happy
+    - account_srv
+
+accountWeb:
+  srvName: accountWeb
+  host: "192.168.0.112"
+  port: 8081
+  tags:
+    - happy
+    - account_web
+jwt:
+  signingKey: 'd2b44df2-7f46-4526-b8e0-c231ca23c582'

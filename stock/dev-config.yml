@@ -1,0 +1,36 @@
+host: "192.168.0.132"
+port: 8848
+namespace: "44fd93b5-beaf-43ed-a2bd-19d7e2c82c4a"
+dataId: "stock.yml"
+group: "dev"
+
+
+#database:
+#  host: "192.168.0.132"
+#  port: 3306
+#  dbName: "account"
+#  username: "root"
+#  password: "123456"
+#redis:
+#  host: "192.168.0.132"
+#  port: 6379
+#
+#consul:
+#  host: "192.168.0.132"
+#  port: 8500
+#
+#accountSrv:
+#  srvName: accountSrv
+#  host: "192.168.0.112"
+#  port: 9095
+#  tags:
+#    - happy
+#    - account_srv
+#
+#accountWeb:
+#  srvName: accountWeb
+#  host: "192.168.0.112"
+#  port: 8081
+#  tags:
+#    - happy
+#    - account_web
