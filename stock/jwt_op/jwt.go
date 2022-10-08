@@ -1,10 +1,10 @@
 package jwt_op
 
 import (
-	"account/internal"
-	"account/log"
 	"errors"
 	"github.com/golang-jwt/jwt/v4"
+	"stock/internal"
+	"stock/log"
 	"time"
 )
 

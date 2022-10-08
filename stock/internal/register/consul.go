@@ -15,22 +15,23 @@ type IRegister interface {
 }
 
 
-type Type int
+type RPCType int
 const(
-	HTTP Type = iota
+	HTTP RPCType = iota
 	GRPC
 )
 
 type ConsulRegistry struct {
 	Host string
 	Port int
-	Type int
+	RPCType RPCType
 }
 
-func NewConsulRegistry(host string,port int,)ConsulRegistry{
+func NewConsulRegistry(host string,port int,rpcType RPCType)ConsulRegistry{
 	return ConsulRegistry{
 		Host: host,
 		Port: port,
+		RPCType: rpcType,
 	}
 }
 
@@ -51,14 +52,33 @@ func (cr ConsulRegistry)Register(name,id string,port int,tags []string)error{
 	agentServiceRegistration.ID = id
 	agentServiceRegistration.Name = name
 	agentServiceRegistration.Tags = tags
-	serverAddr := fmt.Sprintf("http://%s:%d/health",internal.AppConf.StockWeb.Host,internal.AppConf.StockWeb.Port)
-	check := api.AgentServiceCheck{
-		HTTP:                           serverAddr,
-		Timeout:                        "3s",
-		Interval:                       "5s",
-		DeregisterCriticalServiceAfter: "20s",
+
+	var check api.AgentServiceCheck
+	switch cr.RPCType {
+	case GRPC:
+		checkAddr := fmt.Sprintf("%s:%d",internal.AppConf.StockWeb.Host,port)
+		check = api.AgentServiceCheck{
+			GRPC: checkAddr,
+			Timeout: "3s",
+			Interval: "1s",
+			DeregisterCriticalServiceAfter: "5s",
+		}
+	case HTTP:
+		serverAddr := fmt.Sprintf("http://%s:%d/health",internal.AppConf.StockWeb.Host,internal.AppConf.StockWeb.Port)
+		check = api.AgentServiceCheck{
+			HTTP:                           serverAddr,
+			Timeout:                        "3s",
+			Interval:                       "5s",
+			DeregisterCriticalServiceAfter: "20s",
+		}
+	default:
+		zap.S().Panic("consul心跳检查配置失败")
 	}
+
 	agentServiceRegistration.Check = &check
+
+	zap.S().Info("当前节点端口:",port)
+	zap.S().Info("当前节点ID:",id)
 	return client.Agent().ServiceRegister(agentServiceRegistration)
 }
 

@@ -13,7 +13,7 @@ consul:
   port: 8500
 
 stockSrv:
-  srvName: productSrv
+  srvName: stockSrv
   host: "192.168.0.112"
   port: 9097
   tags:
@@ -21,12 +21,11 @@ stockSrv:
     - stock_srv
 
 stockWeb:
-  srvName: productWeb
+  srvName: stockWeb
   host: "192.168.0.112"
   port: 8083
   tags:
     - happy
     - stock_web
 jwt:
-  signingKey: 'd2b44df2-7f46-4526-b8e0-c231ca23c582'
-debug: true
+  signingKey: "b52e7c0d-ffe5-44d4-af47-d5d650e46148"

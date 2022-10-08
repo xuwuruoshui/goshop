@@ -3,15 +3,19 @@ package main
 import (
 	"fmt"
 	"github.com/google/uuid"
-	"github.com/hashicorp/consul/api"
+	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/health"
 	"google.golang.org/grpc/health/grpc_health_v1"
 	"net"
+	"os"
+	"os/signal"
 	"stock/internal"
+	"stock/internal/register"
 	"stock/proto/pb"
 	"stock/stock_srv/biz"
 	"stock/utils"
+	"syscall"
 )
 
 func init(){
@@ -32,49 +36,26 @@ func main(){
 	// 1、GRPC注册健康检查服务
 	grpc_health_v1.RegisterHealthServer(server,health.NewServer())
 
-	// 2.创建Consul客户端
-	config := api.DefaultConfig()
-	config.Address = fmt.Sprintf("%s:%d",
-		internal.AppConf.Consul.Host,
-		internal.AppConf.Consul.Port)
-	client, err := api.NewClient(config)
+	randomId := uuid.New().String()
+	registry := register.NewConsulRegistry(internal.AppConf.StockSrv.Host, port, register.GRPC)
+	err = registry.Register(internal.AppConf.StockSrv.SrvName, randomId, port, internal.AppConf.StockSrv.Tags)
 	if err != nil {
-		panic(err)
+		zap.S().Panic("stock GPRC注册失败")
 	}
 
-	// 3.Consul设置GRPC健康检查地址
-	// 超时3秒,1秒检测一次,超过5秒注销
-	checkAddr := fmt.Sprintf("%s:%d",internal.AppConf.StockWeb.Host,port)
-	check := &api.AgentServiceCheck{
-		GRPC: checkAddr,
-		Timeout: "3s",
-		Interval: "1s",
-		DeregisterCriticalServiceAfter: "5s",
-	}
-
-	// 4.在Consul上注册服务
-	randUUID := uuid.New().String()
-	reg := &api.AgentServiceRegistration{
-		// 服务名称(可以相同，但id必须不一样)
-		Name: internal.AppConf.StockSrv.SrvName,
-		// 每个实例的id
-		ID: randUUID,
-		Port: port,
-		Tags: internal.AppConf.StockSrv.Tags,
-		Address: internal.AppConf.StockSrv.Host,
-		Check: check,
-	}
-
-	err = client.Agent().ServiceRegister(reg)
+	go func() {
+		err = server.Serve(listen)
+		if err != nil {
+			panic(err)
+		}
+	}()
+	q := make(chan os.Signal)
+	signal.Notify(q,syscall.SIGINT,syscall.SIGTERM)
+	<-q
+	err = registry.DeRegister(randomId)
 	if err != nil {
-		panic(err)
-	}
-
-	fmt.Println("当前节点端口:",port)
-	fmt.Println("当前节点ID:",randUUID)
-
-	err = server.Serve(listen)
-	if err != nil {
-		panic(err)
+		zap.S().Panic("stock注销失败",randomId+":"+err.Error())
+	}else{
+		zap.S().Info("stock注销成功",randomId)
 	}
 }
