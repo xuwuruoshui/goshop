@@ -35,7 +35,7 @@ func NewConsulRegistry(host string,port int,rpcType RPCType)ConsulRegistry{
 	}
 }
 
-func (cr ConsulRegistry)Register(name,id string,port int,tags []string)error{
+func (cr ConsulRegistry)Register(name,id,host string,port int,tags []string)error{
 	config := api.DefaultConfig()
 	consulHost := internal.AppConf.Consul.Host
 	consulPort := internal.AppConf.Consul.Port
@@ -46,25 +46,20 @@ func (cr ConsulRegistry)Register(name,id string,port int,tags []string)error{
 		return err
 	}
 
-	agentServiceRegistration := new(api.AgentServiceRegistration)
-	agentServiceRegistration.Address = config.Address
-	agentServiceRegistration.Port = port
-	agentServiceRegistration.ID = id
-	agentServiceRegistration.Name = name
-	agentServiceRegistration.Tags = tags
+
 
 	var check api.AgentServiceCheck
 	switch cr.RPCType {
 	case GRPC:
-		checkAddr := fmt.Sprintf("%s:%d",internal.AppConf.StockWeb.Host,port)
+		serverAddr := fmt.Sprintf("%s:%d",host,port)
 		check = api.AgentServiceCheck{
-			GRPC: checkAddr,
+			GRPC: serverAddr,
 			Timeout: "3s",
 			Interval: "1s",
 			DeregisterCriticalServiceAfter: "5s",
 		}
 	case HTTP:
-		serverAddr := fmt.Sprintf("http://%s:%d/health",internal.AppConf.StockWeb.Host,internal.AppConf.StockWeb.Port)
+		serverAddr := fmt.Sprintf("http://%s:%d/health",host,port)
 		check = api.AgentServiceCheck{
 			HTTP:                           serverAddr,
 			Timeout:                        "3s",
@@ -75,7 +70,16 @@ func (cr ConsulRegistry)Register(name,id string,port int,tags []string)error{
 		zap.S().Panic("consul心跳检查配置失败")
 	}
 
-	agentServiceRegistration.Check = &check
+	agentServiceRegistration := &api.AgentServiceRegistration{
+		// 服务名称(可以相同，但id必须不一样)
+		Name: name,
+		// 每个实例的id
+		ID: id,
+		Port: port,
+		Tags: tags,
+		Address: host,
+		Check: &check,
+	}
 
 	zap.S().Info("当前节点端口:",port)
 	zap.S().Info("当前节点ID:",id)

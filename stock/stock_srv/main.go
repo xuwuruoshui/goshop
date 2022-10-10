@@ -38,7 +38,11 @@ func main(){
 
 	randomId := uuid.New().String()
 	registry := register.NewConsulRegistry(internal.AppConf.StockSrv.Host, port, register.GRPC)
-	err = registry.Register(internal.AppConf.StockSrv.SrvName, randomId, port, internal.AppConf.StockSrv.Tags)
+	err = registry.Register(internal.AppConf.StockSrv.SrvName,
+		randomId,
+		internal.AppConf.StockSrv.Host,
+		port,
+		internal.AppConf.StockSrv.Tags)
 	if err != nil {
 		zap.S().Panic("stock GPRC注册失败")
 	}
